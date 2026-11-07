@@ -1,0 +1,15 @@
+import java.util.Comparator; import java.util.List; import java.util.stream.Collectors;
+public class Task2 {
+public static List<String> toUpperSortedDesc(List<String> list) {
+    return list.stream()
+            .map(String::toUpperCase)
+            .sorted(Comparator.reverseOrder())     // Z → A
+            .collect(Collectors.toList());
+}
+
+public static void main(String[] args) {
+    List<String> names = List.of("Ivan", "Maria", "Peter", "Anna", "Oleg", "Olga");
+    System.out.println(toUpperSortedDesc(names));
+    // [PETER, OLGA, OLEG, MARIA, IVAN, ANNA]
+}
+}
