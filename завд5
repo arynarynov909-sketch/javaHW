@@ -1,0 +1,53 @@
+import java.util.Iterator; import java.util.NoSuchElementException; import java.util.Spliterator; import java.util.Spliterators; import java.util.stream.Stream; import java.util.stream.StreamSupport;
+public class Task5 {
+public static <T> Stream<T> zip(Stream<T> first, Stream<T> second) {
+    Iterator<T> it1 = first.iterator();
+    Iterator<T> it2 = second.iterator();
+
+    Iterator<T> zipped = new Iterator<>() {
+        private boolean takeFromFirst = true;
+
+        @Override
+        public boolean hasNext() {
+            if (takeFromFirst) {
+                // Обидва мають мати елемент, щоб не віддати "сирітський"
+                return it1.hasNext() && it2.hasNext();
+            }
+            // Елемент з першого вже віддано — лишилось добрати з другого
+            return it2.hasNext();
+        }
+
+        @Override
+        public T next() {
+            if (!hasNext()) {
+                throw new NoSuchElementException();
+            }
+            T value = takeFromFirst ? it1.next() : it2.next();
+            takeFromFirst = !takeFromFirst;
+            return value;
+        }
+    };
+
+    return StreamSupport.stream(
+            Spliterators.spliteratorUnknownSize(zipped, Spliterator.ORDERED),
+            false   // sequential
+    );
+}
+
+public static void main(String[] args) {
+    // скінченні стріми
+    System.out.println(
+            zip(Stream.of(1, 3, 5, 7), Stream.of(2, 4, 6)).toList()
+    );
+    // [1, 2, 3, 4, 5, 6] — 7 не потрапляє, бо другий стрім скінчився
+
+    // нескінченні стріми (те, що раніше давало OOM)
+    Stream<Long> inf1 = Task4.lcgStream(25214903917L, 11L, 1L << 48, 1L);
+    Stream<Long> inf2 = Task4.lcgStream(25214903917L, 11L, 1L << 48, 999L);
+
+    zip(inf1, inf2)
+            .limit(6)
+            .forEach(System.out::println);
+    // шість чисел, жодного OutOfMemoryError
+}
+}
