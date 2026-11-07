@@ -1,0 +1,19 @@
+import java.util.Arrays; import java.util.stream.Collectors;
+public class Task3 {
+public static String extractAndSortNumbers(String[] input) {
+    return Arrays.stream(input)
+            .flatMap(s -> Arrays.stream(s.split(",")))
+            .map(String::trim)
+            .filter(s -> !s.isEmpty())
+            .map(Integer::parseInt)
+            .sorted()
+            .map(String::valueOf)
+            .collect(Collectors.joining(", "));
+}
+
+public static void main(String[] args) {
+    String[] arr = {"1, 2, 0", "4, 5"};
+    System.out.println(extractAndSortNumbers(arr));
+    // 0, 1, 2, 4, 5
+}
+}
