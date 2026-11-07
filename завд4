@@ -1,0 +1,28 @@
+import java.util.stream.Stream;
+public class Task4 {
+/**
+ * x[0] = seed
+ * x[n+1] = (a * x[n] + c) mod m
+ *
+ * Для m = 2^48 переповнення long безпечне, бо 2^48 ділить 2^64.
+ * Math.floorMod дає результат у [0, m) — без від'ємних значень.
+ */
+public static Stream<Long> lcgStream(long a, long c, long m, long seed) {
+    if (m <= 0) {
+        throw new IllegalArgumentException("m must be positive");
+    }
+    return Stream.iterate(seed, x -> Math.floorMod(a * x + c, m));
+}
+
+public static void main(String[] args) {
+    long a    = 25214903917L;
+    long c    = 11L;
+    long m    = 1L << 48;   // 2^48 = 281_474_976_710_656
+    long seed = 42L;
+
+    lcgStream(a, c, m, seed)
+            .limit(10)
+            .forEach(System.out::println);
+    // усі значення в [0, m), жодного від'ємного
+}
+}
